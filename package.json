@@ -7,9 +7,16 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "publish": "cp -r ./dist/. ../pages/match-pairs/ && cp -r ./sounds ../pages/match-pairs/"
+    "publish": "cp -r ./dist/. ../pages/match-pairs/ && cp -r ./sounds ../pages/match-pairs/",
+    "format-src": "prettier --write src",
+    "format-src:check": "prettier --check src",
+    "format-docs": "prettier --write src",
+    "format-docs:check": "prettier --check src",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "prettier": "^3.9.6",
     "typescript": "~6.0.2",
     "vite": "^8.0.12"
   },
