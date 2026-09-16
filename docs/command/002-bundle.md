@@ -35,3 +35,9 @@ proj files bundle -o /home/atari-monk/atari-monk/project/match-pairs/docs/prompt
 ```sh
 proj files bundle -o /home/atari-monk/atari-monk/project/match-pairs/docs/prompt/004-ts-formater.md -p /home/atari-monk/atari-monk/project/match-pairs/docs/task/004-ts-formater.md
 ```
+
+## Card interaction
+
+```sh
+proj files bundle -o /home/atari-monk/atari-monk/project/match-pairs/docs/prompt/005-card-interaction2.md -p /home/atari-monk/atari-monk/project/match-pairs/docs/task/005-card-interaction.md /home/atari-monk/atari-monk/project/match-pairs/docs/software-requirements-specification/001-game.md /home/atari-monk/atari-monk/project/match-pairs/docs/guidelines/code.md /home/atari-monk/atari-monk/project/atom-engine/src/input.ts /home/atari-monk/atari-monk/project/match-pairs/src/shared/board.ts /home/atari-monk/atari-monk/project/match-pairs/src/game.ts
+```

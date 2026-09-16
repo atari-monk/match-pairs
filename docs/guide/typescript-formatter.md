@@ -73,3 +73,5 @@ Then create `.vscode/settings.json`:
 ```
 
 Now TypeScript files will be formatted automatically whenever you save them.
+
+- Note: Actually it doesn't remove empty lines from functions and struct i was hoping it would
