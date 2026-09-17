@@ -56,7 +56,12 @@ A mobile-first memory game in which the player flips numbered cards and finds ma
 - When all pairs are found, the game must record the completed game time as a score.
 - The game must maintain the five best scores.
 - Scores must be ordered from best to worst according to completion time.
+- We should render current time and best scores
+
+### Board Reset
+
 - After a game is completed, the board must reset so that a new game can be started.
+- Game should be reset to start screen
 
 ### Mobile Support
 
@@ -78,8 +83,7 @@ A mobile-first memory game in which the player flips numbered cards and finds ma
 - chore(generator): generate project with atom-engine
 - feat(game): add configurable card grid and randomized pairs
 - feat(game): add card flipping and pair matching
-- feat(game): track elapsed time and best five scores
-- feat(game): add game completion and board reset
+- feat(game): track elapsed time, best five scores, reset board
 - feat(engine): add mobile touch input support
 - feat(engine): add mobile screen and resolution support
 - feat(game): integrate mobile engine extensions into Match Pairs

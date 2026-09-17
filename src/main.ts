@@ -1,4 +1,5 @@
 import './style.css';
+
 import {
   createRenderState,
   createInputState,
@@ -9,9 +10,16 @@ import {
   createLoop,
   startLoop,
 } from 'atari-monk-atom-engine';
-import { createGame, updateGame, renderGame } from './game';
+
+import {
+  createGame,
+  startGame,
+  updateGame,
+  renderGame,
+} from './game';
 
 const render = createRenderState('canvas');
+
 const blockedKeys: string[] = [
   'ArrowUp',
   'ArrowDown',
@@ -20,7 +28,9 @@ const blockedKeys: string[] = [
   ' ',
   'e',
 ];
+
 const input = createInputState(blockedKeys);
+
 attachInput(input);
 
 const audio = createAudioState();
@@ -29,7 +39,11 @@ const audio = createAudioState();
   await loadAudio(audio, 'bg', './sounds/twinkle.wav');
 })();
 
-const game = createGame(render, input, audio);
+const game = createGame(
+  render,
+  input,
+  audio,
+);
 
 const overlay = document.getElementById('start-overlay');
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -38,11 +52,23 @@ overlay?.addEventListener('click', async () => {
   overlay.style.display = 'none';
   canvas.style.display = 'block';
 
-  await playMusicAfterGesture(audio, 'bg', 0.5);
+  startGame(game);
+
+  await playMusicAfterGesture(
+    audio,
+    'bg',
+    0.5,
+  );
 });
 
 const loop = createLoop(
-  (dt) => updateGame(game, dt),
+  (dt) => {
+    const completed = updateGame(game, dt);
+
+    if (completed) {
+      overlay?.style.setProperty('display', 'block');
+    }
+  },
   (alpha) => renderGame(game, alpha),
 );
 
