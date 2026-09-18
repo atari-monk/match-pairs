@@ -1,63 +1,42 @@
-## Task
-
-Do you have context you need to do it ?
-Implement util in separate file and update board to adapt to screen.
-Card interactions seems to be afected by this.
-Time score should also adapt to screen and have layout with a board.
-There is issue with clicking. After clicking a cell, some other cell is on, coordinates are messed up somehow.
-
-## docs/software-requirements-specification/002-mobile-screen.md
+## docs/task/time-score.md
 
 ````markdown
-## Mobile Screen
+## Task - Time score
 
-### Viewport Size
-
-**Proposed interface:**
-
-```ts
-interface ViewportSize {
-  width: number;
-  height: number;
-}
-
-function getViewportSize(): ViewportSize;
-```
-
-Implement a helper function that retrieves the current viewport dimensions of the device.
-
-The helper should return the current `window.innerWidth` and `window.innerHeight`, allowing the board to be sized according to the available viewport rather than the device's physical screen resolution.
-
-The function should work automatically in both portrait and landscape orientations.
-
-### Board Size
-
-Use the `getViewportSize()` helper to determine the available viewport dimensions and size the board accordingly.
-
-The board should adapt to the current viewport width and height and update its dimensions when the viewport changes, including transitions between portrait and landscape orientations.
-
-### Board Behavior
-
-For this task, focus exclusively on the game board and its responsive behavior.
-
-The board should use the available viewport dimensions to automatically adjust its size. When the mobile viewport dimensions change, including when switching between portrait and landscape orientations, the board should resize accordingly while maintaining its intended proportions and fitting within the available space.
+- Given:
+  - Srs
+  - Code rules
+  - Input, board, card interaction and game
+- Implement Game Progress and Board Reset srs sections
+- Create time-score file in shared and consume it in game
 ````
 
-## src/engine/viewport-size.ts
+## docs/srs/time-score.md
 
-```typescript
-export type ViewportSize = {
-  width: number;
-  height: number;
-};
+````markdown
+## Time score
 
-export function getViewportSize(): ViewportSize {
-  return {
-    width: window.innerWidth,
-    height: window.innerHeight,
-  };
-}
-```
+- The game must continue until every pair has been found.
+- The game must track the elapsed time for the current game.
+- When all pairs are found, the game must record the completed game time as a score.
+- The game must maintain the five best scores.
+- Scores must be ordered from best to worst according to completion time.
+- We should render current time and best scores
+````
+
+## docs/rule/code.md
+
+````markdown
+## Code rules
+
+- Use structs and functions
+- No comments in code
+- Write in style of code provided as context
+- Implement only strict requrerments
+- Try to keep balance: minimal high quality code to implement srs
+- If context allow implement, if not ask for missing source, docs or info
+- Use full code files as response and short description of solution
+````
 
 ## src/engine/touch-input.ts
 
@@ -91,12 +70,11 @@ export function attachTouchInput(
      * Convert CSS/client coordinates into canvas drawing-buffer
      * coordinates.
      *
-     * This handles cases where:
-     *   canvas.width  !== canvas.clientWidth
-     *   canvas.height !== canvas.clientHeight
+     * The board uses drawing-buffer coordinates, so this conversion
+     * must account for any difference between the CSS canvas size
+     * and the actual canvas width/height.
      */
     state.x = (clientX - rect.left) * (canvas.width / rect.width);
-
     state.y = (clientY - rect.top) * (canvas.height / rect.height);
   };
 
@@ -141,7 +119,6 @@ export type BoardState = {
 function shuffle(values: number[]) {
   for (let i = values.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
-
     [values[i], values[j]] = [values[j], values[i]];
   }
 }
@@ -160,7 +137,10 @@ export function createBoard(
     throw new Error('Board must contain an even number of cards');
   }
 
-  const values = Array.from({ length: count / 2 }, (_, index) => index + 1);
+  const values = Array.from(
+    { length: count / 2 },
+    (_, index) => index + 1,
+  );
 
   const pairs = [...values, ...values];
 
@@ -223,15 +203,28 @@ export function resizeBoard(
   }
 }
 
-export function renderBoard(board: BoardState, ctx: CanvasRenderingContext2D) {
+export function renderBoard(
+  board: BoardState,
+  ctx: CanvasRenderingContext2D,
+) {
   for (const card of board.cards) {
     ctx.fillStyle = card.faceUp ? 'white' : 'gray';
 
-    ctx.fillRect(card.x, card.y, card.width, card.height);
+    ctx.fillRect(
+      card.x,
+      card.y,
+      card.width,
+      card.height,
+    );
 
     ctx.strokeStyle = 'black';
 
-    ctx.strokeRect(card.x, card.y, card.width, card.height);
+    ctx.strokeRect(
+      card.x,
+      card.y,
+      card.width,
+      card.height,
+    );
 
     if (!card.faceUp) {
       continue;
@@ -310,7 +303,6 @@ function resolveSelection(state: CardInteractionState) {
     state.second.matched = true;
 
     resetSelection(state);
-
     return;
   }
 
@@ -345,7 +337,11 @@ export function updateCardInteraction(
     return;
   }
 
-  const card = getCardAt(board, input.x, input.y);
+  const card = getCardAt(
+    board,
+    input.x,
+    input.y,
+  );
 
   if (!card || card.faceUp || card.matched) {
     return;
@@ -387,7 +383,10 @@ export function createTimeScoreState(): TimeScoreState {
   };
 }
 
-export function updateTimeScore(state: TimeScoreState, dt: number) {
+export function updateTimeScore(
+  state: TimeScoreState,
+  dt: number,
+) {
   if (state.completed) {
     return;
   }
@@ -395,7 +394,9 @@ export function updateTimeScore(state: TimeScoreState, dt: number) {
   state.current += dt;
 }
 
-export function recordTimeScore(state: TimeScoreState) {
+export function recordTimeScore(
+  state: TimeScoreState,
+) {
   if (state.completed) {
     return state.lastCompleted ?? state.current;
   }
@@ -405,12 +406,19 @@ export function recordTimeScore(state: TimeScoreState) {
   state.lastCompleted = score;
   state.completed = true;
 
-  state.scores = [...state.scores, score].sort((a, b) => a - b).slice(0, 5);
+  state.scores = [
+    ...state.scores,
+    score,
+  ]
+    .sort((a, b) => a - b)
+    .slice(0, 5);
 
   return score;
 }
 
-export function resetTimeScore(state: TimeScoreState) {
+export function resetTimeScore(
+  state: TimeScoreState,
+) {
   state.current = 0;
   state.completed = false;
 }
@@ -422,7 +430,6 @@ export function renderTimeScore(
   height: number,
 ) {
   ctx.fillStyle = 'white';
-
   ctx.fillRect(0, 0, width, height);
 
   ctx.fillStyle = 'black';
@@ -430,23 +437,42 @@ export function renderTimeScore(
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
 
-  const padding = Math.max(12, width * 0.04);
+  const padding = Math.max(
+    12,
+    Math.min(width, height) * 0.08,
+  );
 
-  const timeFontSize = Math.max(18, Math.min(36, height * 0.36));
+  const timeFontSize = Math.max(
+    18,
+    Math.min(36, height * 0.36),
+  );
 
-  const bestFontSize = Math.max(14, Math.min(26, height * 0.25));
+  const bestFontSize = Math.max(
+    14,
+    Math.min(26, height * 0.25),
+  );
 
   ctx.font = `${Math.floor(timeFontSize)}px sans-serif`;
 
-  ctx.fillText(`Time: ${state.current.toFixed(2)}s`, padding, height * 0.3);
+  ctx.fillText(
+    `Time: ${state.current.toFixed(2)}s`,
+    padding,
+    height * 0.3,
+  );
 
   ctx.font = `${Math.floor(bestFontSize)}px sans-serif`;
 
   const bestText = state.scores.length
-    ? state.scores.map((score) => `${score.toFixed(2)}s`).join('   ')
+    ? state.scores
+        .map((score) => `${score.toFixed(2)}s`)
+        .join('   ')
     : 'No scores yet';
 
-  ctx.fillText(`Best: ${bestText}`, padding, height * 0.72);
+  ctx.fillText(
+    `Best: ${bestText}`,
+    padding,
+    height * 0.72,
+  );
 }
 ```
 
@@ -467,7 +493,10 @@ import {
   type BoardState,
 } from './shared/board';
 
-import { getViewportSize, type ViewportSize } from './engine/viewport-size';
+import {
+  getViewportSize,
+  type ViewportSize,
+} from './engine/viewport-size';
 
 import {
   createCardInteraction,
@@ -494,12 +523,6 @@ import {
 const BOARD_COLUMNS = 4;
 const BOARD_ROWS = 4;
 
-/*
- * Score and board together consume 100% of the viewport.
- *
- * The score gets a responsive portion of the screen and
- * the board gets everything below it.
- */
 const SCORE_HEIGHT_RATIO = 0.18;
 const MIN_SCORE_HEIGHT = 64;
 const MAX_SCORE_HEIGHT = 120;
@@ -531,17 +554,27 @@ type GameLayout = {
   };
 };
 
-function getScoreHeight(viewport: ViewportSize) {
+function getScoreHeight(
+  viewport: ViewportSize,
+) {
   return Math.min(
     MAX_SCORE_HEIGHT,
-    Math.max(MIN_SCORE_HEIGHT, viewport.height * SCORE_HEIGHT_RATIO),
+    Math.max(
+      MIN_SCORE_HEIGHT,
+      viewport.height * SCORE_HEIGHT_RATIO,
+    ),
   );
 }
 
-function getGameLayout(viewport: ViewportSize): GameLayout {
+function getGameLayout(
+  viewport: ViewportSize,
+): GameLayout {
   const scoreHeight = getScoreHeight(viewport);
 
-  const boardHeight = Math.max(0, viewport.height - scoreHeight);
+  const boardHeight = Math.max(
+    0,
+    viewport.height - scoreHeight,
+  );
 
   return {
     score: {
@@ -552,11 +585,6 @@ function getGameLayout(viewport: ViewportSize): GameLayout {
     },
 
     board: {
-      /*
-       * No centering or aspect-ratio calculation.
-       * The board fills the entire width and all
-       * remaining height.
-       */
       x: 0,
       y: scoreHeight,
       width: viewport.width,
@@ -565,8 +593,37 @@ function getGameLayout(viewport: ViewportSize): GameLayout {
   };
 }
 
-function createViewportBoard(): BoardState {
+/**
+ * Make the canvas drawing buffer use the same coordinate
+ * system as the viewport used by the game layout.
+ *
+ * The CSS size and drawing-buffer size are deliberately
+ * handled independently. Pointer input converts from the
+ * CSS/client coordinate system into this drawing-buffer
+ * coordinate system.
+ */
+function resizeCanvasToViewport(
+  canvas: HTMLCanvasElement,
+  viewport: ViewportSize,
+) {
+  if (
+    canvas.width !== viewport.width ||
+    canvas.height !== viewport.height
+  ) {
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+  }
+}
+
+function createViewportBoard(
+  canvas: HTMLCanvasElement,
+): BoardState {
   const viewport = getViewportSize();
+
+  resizeCanvasToViewport(
+    canvas,
+    viewport,
+  );
 
   const layout = getGameLayout(viewport);
 
@@ -580,8 +637,20 @@ function createViewportBoard(): BoardState {
   );
 }
 
-function resizeGameBoard(state: GameState) {
+function resizeGameLayout(
+  state: GameState,
+) {
+  const canvas = state.render.ctx.canvas;
   const viewport = getViewportSize();
+
+  /*
+   * Keep the canvas drawing buffer synchronized with the
+   * coordinate system used by the board.
+   */
+  resizeCanvasToViewport(
+    canvas,
+    viewport,
+  );
 
   const layout = getGameLayout(viewport);
 
@@ -599,82 +668,184 @@ export function createGame(
   input: InputState,
   audio: AudioState,
 ): GameState {
+  const canvas = render.ctx.canvas;
+
   const touch = createTouchInputState();
 
-  attachTouchInput(touch, render.ctx.canvas);
+  attachTouchInput(
+    touch,
+    canvas,
+  );
+
+  /*
+   * Initialize the canvas before creating the board so both
+   * use exactly the same coordinate system.
+   */
+  const viewport = getViewportSize();
+
+  resizeCanvasToViewport(
+    canvas,
+    viewport,
+  );
+
+  const layout = getGameLayout(viewport);
+
+  const board = createBoard(
+    layout.board.x,
+    layout.board.y,
+    layout.board.width,
+    layout.board.height,
+    BOARD_COLUMNS,
+    BOARD_ROWS,
+  );
 
   const state: GameState = {
     render,
     input,
     touch,
     audio,
-    board: createViewportBoard(),
+    board,
     cardInteraction: createCardInteraction(),
     timeScore: createTimeScoreState(),
     running: false,
   };
 
   const resize = () => {
-    resizeGameBoard(state);
+    resizeGameLayout(state);
   };
 
-  window.addEventListener('resize', resize);
+  window.addEventListener(
+    'resize',
+    resize,
+  );
 
-  window.addEventListener('orientationchange', resize);
+  window.addEventListener(
+    'orientationchange',
+    resize,
+  );
 
   return state;
 }
 
-export function startGame(state: GameState) {
-  state.board = createViewportBoard();
+export function startGame(
+  state: GameState,
+) {
+  state.board = createViewportBoard(
+    state.render.ctx.canvas,
+  );
 
-  state.cardInteraction = createCardInteraction();
+  state.cardInteraction =
+    createCardInteraction();
 
-  resetTimeScore(state.timeScore);
+  resetTimeScore(
+    state.timeScore,
+  );
 
   state.running = true;
 
-  clearTouchPressed(state.touch);
+  clearTouchPressed(
+    state.touch,
+  );
 }
 
-export function updateGame(state: GameState, dt: number) {
+export function updateGame(
+  state: GameState,
+  dt: number,
+) {
   if (!state.running) {
-    clearTouchPressed(state.touch);
+    clearTouchPressed(
+      state.touch,
+    );
 
     return false;
   }
 
-  updateTimeScore(state.timeScore, dt);
+  updateTimeScore(
+    state.timeScore,
+    dt,
+  );
 
-  updateCardInteraction(state.cardInteraction, state.board, state.touch, dt);
+  updateCardInteraction(
+    state.cardInteraction,
+    state.board,
+    state.touch,
+    dt,
+  );
 
-  if (!state.board.cards.every((card) => card.matched)) {
-    clearTouchPressed(state.touch);
+  if (
+    !state.board.cards.every(
+      (card) => card.matched,
+    )
+  ) {
+    clearTouchPressed(
+      state.touch,
+    );
 
     return false;
   }
 
-  recordTimeScore(state.timeScore);
+  recordTimeScore(
+    state.timeScore,
+  );
 
-  state.board = createViewportBoard();
+  state.board = createViewportBoard(
+    state.render.ctx.canvas,
+  );
 
-  state.cardInteraction = createCardInteraction();
+  state.cardInteraction =
+    createCardInteraction();
 
   state.running = false;
 
-  clearTouchPressed(state.touch);
+  clearTouchPressed(
+    state.touch,
+  );
 
   return true;
 }
 
-export function renderGame(state: GameState, _alpha: number) {
+export function renderGame(
+  state: GameState,
+  _alpha: number,
+) {
+  const viewport = getViewportSize();
+
+  /*
+   * Make sure the canvas and layout remain synchronized
+   * even if the viewport changed between resize events
+   * and rendering.
+   */
+  resizeCanvasToViewport(
+    state.render.ctx.canvas,
+    viewport,
+  );
+
+  const layout = getGameLayout(
+    viewport,
+  );
+
+  /*
+   * If the viewport changed, update the existing board's
+   * geometry without recreating its card state.
+   */
+  if (
+    state.board.x !== layout.board.x ||
+    state.board.y !== layout.board.y ||
+    state.board.width !== layout.board.width ||
+    state.board.height !== layout.board.height
+  ) {
+    resizeBoard(
+      state.board,
+      layout.board.x,
+      layout.board.y,
+      layout.board.width,
+      layout.board.height,
+    );
+  }
+
   clear(state.render);
 
   const ctx = state.render.ctx;
-
-  const viewport = getViewportSize();
-
-  const layout = getGameLayout(viewport);
 
   renderTimeScore(
     state.timeScore,
@@ -683,6 +854,90 @@ export function renderGame(state: GameState, _alpha: number) {
     layout.score.height,
   );
 
-  renderBoard(state.board, ctx);
+  renderBoard(
+    state.board,
+    ctx,
+  );
 }
 ```
+
+## src/main.ts
+
+```typescript
+import './style.css';
+
+import {
+  createRenderState,
+  createInputState,
+  attachInput,
+  createAudioState,
+  loadAudio,
+  playMusicAfterGesture,
+  createLoop,
+  startLoop,
+} from 'atari-monk-atom-engine';
+
+import {
+  createGame,
+  startGame,
+  updateGame,
+  renderGame,
+} from './game';
+
+const render = createRenderState('canvas');
+
+const blockedKeys: string[] = [
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  ' ',
+  'e',
+];
+
+const input = createInputState(blockedKeys);
+
+attachInput(input);
+
+const audio = createAudioState();
+
+(async () => {
+  await loadAudio(audio, 'bg', './sounds/twinkle.wav');
+})();
+
+const game = createGame(
+  render,
+  input,
+  audio,
+);
+
+const overlay = document.getElementById('start-overlay');
+const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+overlay?.addEventListener('click', async () => {
+  overlay.style.display = 'none';
+  canvas.style.display = 'block';
+
+  startGame(game);
+
+  await playMusicAfterGesture(
+    audio,
+    'bg',
+    0.5,
+  );
+});
+
+const loop = createLoop(
+  (dt) => {
+    const completed = updateGame(game, dt);
+
+    if (completed) {
+      overlay?.style.setProperty('display', 'block');
+    }
+  },
+  (alpha) => renderGame(game, alpha),
+);
+
+startLoop(loop);
+```
+

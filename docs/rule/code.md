@@ -1,6 +1,4 @@
-## Rule
-
-### Code
+## Code rules
 
 - Use structs and functions
 - No comments in code

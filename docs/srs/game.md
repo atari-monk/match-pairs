@@ -1,10 +1,3 @@
-## Task
-
-Given game srs, code spec and example of rect (game object) and game. Implement Game Board.
-
-## docs/software-requirements-specification/game.md
-
-```markdown
 ---
 title: 'Match Pairs — Software Requirements Specification'
 
@@ -63,7 +56,12 @@ A mobile-first memory game in which the player flips numbered cards and finds ma
 - When all pairs are found, the game must record the completed game time as a score.
 - The game must maintain the five best scores.
 - Scores must be ordered from best to worst according to completion time.
+- We should render current time and best scores
+
+### Board Reset
+
 - After a game is completed, the board must reset so that a new game can be started.
+- Game should be reset to start screen
 
 ### Mobile Support
 
@@ -82,125 +80,14 @@ A mobile-first memory game in which the player flips numbered cards and finds ma
 
 ### Commits
 
-- chore(generator): generate project with atom-engine
-- feat(game): add configurable card grid and randomized pairs
-- feat(game): add card flipping and pair matching
-- feat(game): track elapsed time and best five scores
-- feat(game): add game completion and board reset
-- feat(engine): add mobile touch input support
-- feat(engine): add mobile screen and resolution support
-- feat(game): integrate mobile engine extensions into Match Pairs
-```
+- chore: generate project with atom-engine
+- feat: add configurable card grid and randomized pairs
+- feat: add card flipping and pair matching
+- feat: track elapsed time, best five scores, reset board
+- feat: add mobile screen and resolution support
+- feat: integrate mobile engine extensions into Match Pairs
 
-## docs/guidelines/code.md
+#### Engine
 
-```markdown
-## Code
-
-- Use structs and functions
-- No comments in code
-- Write in style of code provided as context
-- Implement only strict requrerments
-- Try to keep balance: minimal high quality code to implement srs
-```
-
-## /home/atari-monk/atari-monk/project/match-pairs/src/shared/rect.ts
-
-```typescript
-export type RectState = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  baseWidth: number;
-  baseHeight: number;
-  color: string;
-  time: number;
-  speed: number;
-  scale: number;
-};
-
-export function createRect(
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  color = 'white',
-): RectState {
-  return {
-    x,
-    y,
-    width,
-    height,
-    baseWidth: width,
-    baseHeight: height,
-    color,
-    time: 0,
-    speed: 3,
-    scale: 1,
-  };
-}
-
-export function updateRect(rect: RectState, dt: number) {
-  rect.time += dt;
-
-  rect.scale = 1 + Math.sin(rect.time * rect.speed) * 0.9;
-}
-
-export function renderRect(rect: RectState, ctx: CanvasRenderingContext2D) {
-  const w = rect.baseWidth * rect.scale;
-  const h = rect.baseHeight * rect.scale;
-
-  const dx = rect.x - (w - rect.baseWidth) / 2;
-  const dy = rect.y - (h - rect.baseHeight) / 2;
-
-  ctx.fillStyle = rect.color;
-  ctx.fillRect(dx, dy, w, h);
-}
-```
-
-## src/game.ts
-
-```typescript
-import {
-  type RenderState,
-  type InputState,
-  type AudioState,
-  clear,
-} from 'atari-monk-atom-engine';
-import {
-  createRect,
-  renderRect,
-  updateRect,
-  type RectState,
-} from './shared/rect';
-
-export type GameState = {
-  render: RenderState;
-  input: InputState;
-  audio: AudioState;
-  rect: RectState;
-};
-
-export function createGame(
-  render: RenderState,
-  input: InputState,
-  audio: AudioState,
-): GameState {
-  return {
-    render,
-    input,
-    audio,
-    rect: createRect(960 - 50, 540 - 50, 100, 100),
-  };
-}
-
-export function updateGame(state: GameState, dt: number) {
-  updateRect(state.rect, dt);
-}
-
-export function renderGame(state: GameState, _alpha: number) {
-  clear(state.render);
-  renderRect(state.rect, state.render.ctx);
-}
-```
+- feat: add mobile touch input support
+- feat: add mobile screen and resolution support
