@@ -39,15 +39,22 @@ export function createBoard(
     throw new Error('Board must contain an even number of cards');
   }
 
-  const values = Array.from({ length: count / 2 }, (_, index) => index + 1);
+  const values = Array.from(
+    { length: count / 2 },
+    (_, index) => index + 1,
+  );
 
   const pairs = [...values, ...values];
+
   shuffle(pairs);
+
   const cardWidth = width / columns;
   const cardHeight = height / rows;
+
   const cards = pairs.map((value, index) => {
     const column = index % columns;
     const row = Math.floor(index / columns);
+
     return {
       x: x + column * cardWidth,
       y: y + row * cardHeight,
@@ -70,30 +77,76 @@ export function createBoard(
   };
 }
 
+export function resizeBoard(
+  board: BoardState,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+) {
+  board.x = x;
+  board.y = y;
+  board.width = width;
+  board.height = height;
+
+  const cardWidth = width / board.columns;
+  const cardHeight = height / board.rows;
+
+  for (let index = 0; index < board.cards.length; index += 1) {
+    const column = index % board.columns;
+    const row = Math.floor(index / board.columns);
+
+    const card = board.cards[index];
+
+    card.x = x + column * cardWidth;
+    card.y = y + row * cardHeight;
+    card.width = cardWidth;
+    card.height = cardHeight;
+  }
+}
+
 export function renderBoard(
   board: BoardState,
-
   ctx: CanvasRenderingContext2D,
 ) {
   for (const card of board.cards) {
     ctx.fillStyle = card.faceUp ? 'white' : 'gray';
 
-    ctx.fillRect(card.x, card.y, card.width, card.height);
+    ctx.fillRect(
+      card.x,
+      card.y,
+      card.width,
+      card.height,
+    );
 
     ctx.strokeStyle = 'black';
 
-    ctx.strokeRect(card.x, card.y, card.width, card.height);
+    ctx.strokeRect(
+      card.x,
+      card.y,
+      card.width,
+      card.height,
+    );
 
-    if (card.faceUp) {
-      ctx.fillStyle = 'black';
-      ctx.font = `${Math.floor(card.height * 0.4)}px sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(
-        String(card.value),
-        card.x + card.width / 2,
-        card.y + card.height / 2,
-      );
+    if (!card.faceUp) {
+      continue;
     }
+
+    ctx.fillStyle = 'black';
+
+    const fontSize = Math.max(
+      12,
+      Math.floor(Math.min(card.width, card.height) * 0.4),
+    );
+
+    ctx.font = `${fontSize}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.fillText(
+      String(card.value),
+      card.x + card.width / 2,
+      card.y + card.height / 2,
+    );
   }
 }

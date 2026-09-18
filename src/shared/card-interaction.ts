@@ -19,7 +19,11 @@ export function createCardInteraction(
   };
 }
 
-function getCardAt(board: BoardState, x: number, y: number) {
+function getCardAt(
+  board: BoardState,
+  x: number,
+  y: number,
+): CardState | undefined {
   return board.cards.find(
     (card) =>
       x >= card.x &&
@@ -35,11 +39,14 @@ function resetSelection(state: CardInteractionState) {
 }
 
 function resolveSelection(state: CardInteractionState) {
-  if (!state.first || !state.second) return;
+  if (!state.first || !state.second) {
+    return;
+  }
 
   if (state.first.value === state.second.value) {
     state.first.matched = true;
     state.second.matched = true;
+
     resetSelection(state);
     return;
   }
@@ -57,18 +64,33 @@ export function updateCardInteraction(
     state.blocked = Math.max(0, state.blocked - dt);
 
     if (state.blocked === 0) {
-      if (state.first) state.first.faceUp = false;
-      if (state.second) state.second.faceUp = false;
+      if (state.first) {
+        state.first.faceUp = false;
+      }
+
+      if (state.second) {
+        state.second.faceUp = false;
+      }
+
       resetSelection(state);
     }
 
     return;
   }
 
-  if (!input.pressed) return;
+  if (!input.pressed) {
+    return;
+  }
 
-  const card = getCardAt(board, input.x, input.y);
-  if (!card || card.faceUp || card.matched) return;
+  const card = getCardAt(
+    board,
+    input.x,
+    input.y,
+  );
+
+  if (!card || card.faceUp || card.matched) {
+    return;
+  }
 
   card.faceUp = true;
 
@@ -77,8 +99,11 @@ export function updateCardInteraction(
     return;
   }
 
-  if (card === state.first) return;
+  if (card === state.first) {
+    return;
+  }
 
   state.second = card;
+
   resolveSelection(state);
 }

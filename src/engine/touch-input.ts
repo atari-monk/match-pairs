@@ -1,16 +1,14 @@
 export type TouchInputState = {
-  pressed: boolean;
   x: number;
   y: number;
-  canvas: HTMLCanvasElement | null;
+  pressed: boolean;
 };
 
 export function createTouchInputState(): TouchInputState {
   return {
-    pressed: false,
     x: 0,
     y: 0,
-    canvas: null,
+    pressed: false,
   };
 }
 
@@ -18,28 +16,35 @@ export function attachTouchInput(
   state: TouchInputState,
   canvas: HTMLCanvasElement,
 ) {
-  state.canvas = canvas;
+  const updatePosition = (clientX: number, clientY: number) => {
+    const rect = canvas.getBoundingClientRect();
 
-  canvas.addEventListener(
-    'touchstart',
-    (e) => {
-      const touch = e.changedTouches[0];
-      if (!touch) return;
+    if (rect.width === 0 || rect.height === 0) {
+      return;
+    }
 
-      const rect = canvas.getBoundingClientRect();
-      state.x = ((touch.clientX - rect.left) / rect.width) * canvas.width;
-      state.y = ((touch.clientY - rect.top) / rect.height) * canvas.height;
-      state.pressed = true;
-      e.preventDefault();
-    },
-    { passive: false },
-  );
+    /*
+     * Convert CSS/client coordinates into canvas drawing-buffer
+     * coordinates.
+     *
+     * The board uses drawing-buffer coordinates, so this conversion
+     * must account for any difference between the CSS canvas size
+     * and the actual canvas width/height.
+     */
+    state.x = (clientX - rect.left) * (canvas.width / rect.width);
+    state.y = (clientY - rect.top) * (canvas.height / rect.height);
+  };
+
+  canvas.addEventListener('pointerdown', (event) => {
+    updatePosition(event.clientX, event.clientY);
+    state.pressed = true;
+  });
+
+  canvas.addEventListener('pointermove', (event) => {
+    updatePosition(event.clientX, event.clientY);
+  });
 }
 
 export function clearTouchPressed(state: TouchInputState) {
   state.pressed = false;
-}
-
-export function isTouchPressed(state: TouchInputState) {
-  return state.pressed;
 }
