@@ -1,8 +1,10 @@
 ## Task
 
+### Game srs
+
 Given srs draft and template, generate full srs document.
 
-### docs/software-requirements-specification-draft/game.md
+## docs/srs/001-game-draft.md
 
 ```markdown
 ## Game `Match Pairs`
@@ -23,7 +25,7 @@ Given srs draft and template, generate full srs document.
   - Make sure resolution/screen fits mobile needs, extend engine for that if needed
 ```
 
-### docs/template/srs.md
+## docs/srs/srs-template.md
 
 ```markdown
 ---
