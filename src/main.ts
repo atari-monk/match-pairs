@@ -16,7 +16,7 @@ import {
   startGame,
   updateGame,
   renderGame,
-} from './game';
+} from './game/game';
 
 const render = createRenderState('canvas');
 

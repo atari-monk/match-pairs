@@ -10,25 +10,25 @@ import {
   resizeBoard,
   renderBoard,
   type BoardState,
-} from './shared/board';
+} from './board';
 
 import {
   getViewportSize,
   type ViewportSize,
-} from './engine/viewport-size';
+} from '../engine/viewport-size';
 
 import {
   createCardInteraction,
   updateCardInteraction,
   type CardInteractionState,
-} from './shared/card-interaction';
+} from './card-interaction';
 
 import {
   attachTouchInput,
   clearTouchPressed,
   createTouchInputState,
   type TouchInputState,
-} from './engine/touch-input';
+} from '../engine/touch-input';
 
 import {
   createTimeScoreState,
@@ -37,7 +37,7 @@ import {
   resetTimeScore,
   type TimeScoreState,
   renderTimeScore,
-} from './shared/time-score';
+} from './time-score';
 
 const BOARD_COLUMNS = 4;
 const BOARD_ROWS = 4;
