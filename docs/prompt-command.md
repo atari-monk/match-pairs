@@ -25,7 +25,7 @@ proj files bundle \
 -o docs/prompt/game-board.md \
 -p docs/task/game-board.md \
    docs/srs/game-board.md \
-   docs/rule/code.md \
+   docs/code-rule.md \
    ../atom-starter/src/shared/rect.ts \
    src/game.ts
 ```
@@ -38,7 +38,7 @@ proj files bundle \
 -o docs/prompt/card-interaction.md \
 -p docs/task/card-interaction.md \
    docs/srs/card-interaction.md \
-   docs/rule/code.md \
+   docs/code-rule.md \
    ../atom-engine/src/input.ts \
    src/shared/board.ts \
    src/game.ts
@@ -52,7 +52,7 @@ proj files bundle \
 -o docs/prompt/time-score.md \
 -p docs/task/time-score.md \
    docs/srs/time-score.md \
-   docs/rule/code.md \
+   docs/code-rule.md \
    src/engine/touch-input.ts \
    src/shared/board.ts \
    src/shared/card-interaction.ts \
@@ -69,7 +69,7 @@ proj files bundle \
 -o docs/prompt/mobile-screen.md \
 -p docs/task/mobile-screen.md \
    docs/srs/mobile-screen.md \
-   docs/rule/code.md \
+   docs/code-rule.md \
    src/engine/viewport-size.ts \
    src/engine/touch-input.ts \
    src/shared/board.ts \
