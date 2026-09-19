@@ -7,12 +7,12 @@ import {
 import {
   startGameRound,
   advanceGame,
-} from './logic/game-rules';
+} from './game-rules';
 
 import {
   drawGame,
-} from './renderer/game-renderer';
-import { buildGame } from './factory/create-game';
+} from './game-renderer';
+import { buildGame } from './create-game';
 import type { GameState } from './game-type';
 
 export function createGame(

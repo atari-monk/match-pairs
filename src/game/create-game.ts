@@ -1,11 +1,10 @@
 import type { RenderState, InputState, AudioState } from "atari-monk-atom-engine";
-import { createTouchInputState, attachTouchInput } from "../../engine/touch-input";
-import { createCardInteraction } from "../components/card-interaction";
-import { createTimeScoreState } from "../components/time-score";
-import type { GameState } from "../game-type";
-import { updateLayout } from "../layout";
-import { createBoardFromLayout } from "./create-board";
-import { resizeBoard } from "../components/board";
+import { createTouchInputState, attachTouchInput } from "../engine/touch-input";
+import { createCardInteraction } from "./card-interaction";
+import { createTimeScoreState } from "./time-score";
+import type { GameState } from "./game-type";
+import { updateLayout } from "./layout";
+import { createBoardFromLayout, resizeBoard } from "./board";
 
 export function buildGame(
   render: RenderState,

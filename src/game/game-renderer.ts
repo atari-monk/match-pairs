@@ -6,16 +6,16 @@ import {
 import {
   type BoardState,
   renderBoard,
-} from '../components/board';
+} from './board';
 
 import {
   type TimeScoreState,
   renderTimeScore,
-} from '../components/time-score';
+} from './time-score';
 
 import {
   type Rect,
-} from '../layout';
+} from './layout';
 
 export function drawGame(
   render: RenderState,

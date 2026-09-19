@@ -1,8 +1,8 @@
-import { clearTouchPressed } from "../../engine/touch-input";
-import type { BoardState } from "../components/board";
-import { createCardInteraction, updateCardInteraction } from "../components/card-interaction";
-import { recordTimeScore, resetTimeScore, updateTimeScore } from "../components/time-score";
-import type { GameState } from "../game-type";
+import { clearTouchPressed } from "../engine/touch-input";
+import type { BoardState } from "./board";
+import { createCardInteraction, updateCardInteraction } from "./card-interaction";
+import { recordTimeScore, resetTimeScore, updateTimeScore } from "./time-score";
+import type { GameState } from "./game-type";
 
 export function startGameRound(
   state: GameState,

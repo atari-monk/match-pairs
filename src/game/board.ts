@@ -1,3 +1,5 @@
+import type { GameLayout } from "./layout";
+
 export type CardState = {
   x: number;
   y: number;
@@ -149,4 +151,20 @@ export function renderBoard(
       card.y + card.height / 2,
     );
   }
+}
+
+const BOARD_COLUMNS = 4;
+const BOARD_ROWS = 4;
+
+export function createBoardFromLayout(
+  layout: GameLayout,
+): BoardState {
+  return createBoard(
+    layout.board.x,
+    layout.board.y,
+    layout.board.width,
+    layout.board.height,
+    BOARD_COLUMNS,
+    BOARD_ROWS,
+  );
 }
