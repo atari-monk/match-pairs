@@ -17,7 +17,7 @@ import {
   type Rect,
 } from '../layout';
 
-export function renderGameRenderer(
+export function drawGame(
   render: RenderState,
   board: BoardState,
   timeScore: TimeScoreState,

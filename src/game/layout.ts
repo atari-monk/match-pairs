@@ -1,4 +1,5 @@
-import type { ViewportSize } from '../engine/viewport-size';
+import { resizeCanvasToViewport } from '../engine/canvas';
+import { getViewportSize, type ViewportSize } from '../engine/viewport-size';
 
 const SCORE_HEIGHT_RATIO = 0.18;
 const MIN_SCORE_HEIGHT = 64;
@@ -55,4 +56,17 @@ export function getGameLayout(
       height: boardHeight,
     },
   };
+}
+
+export function updateLayout(canvas: HTMLCanvasElement): GameLayout{
+  const viewport = getViewportSize();
+
+  resizeCanvasToViewport(
+    canvas,
+    viewport,
+  );
+
+  return getGameLayout(
+    viewport,
+  );
 }

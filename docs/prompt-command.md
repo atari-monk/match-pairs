@@ -77,3 +77,14 @@ proj files bundle \
    src/shared/time-score.ts \
    src/game.ts
 ```
+
+### Layout code
+
+```sh
+cd /home/atari-monk/atari-monk/project/match-pairs/ && \
+proj files bundle \
+-o docs/_temp.md \
+-p src/game/game.ts \
+   src/game/layout.ts \
+   src/game/factory/create-board.ts
+```
