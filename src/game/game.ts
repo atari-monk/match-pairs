@@ -1,0 +1,54 @@
+import {
+  type RenderState,
+  type InputState,
+  type AudioState,
+} from 'atari-monk-atom-engine';
+import {
+  startGameRound,
+  advanceGame,
+} from './game-rules';
+import {
+  drawGame,
+} from './game-renderer';
+import { buildGame } from './create-game';
+import type { GameAssets, GameState } from './game-type';
+
+export function createGame(
+  render: RenderState,
+  input: InputState,
+  audio: AudioState,
+  assets: GameAssets,
+): GameState {
+  return buildGame(
+    render,
+    input,
+    audio,
+    assets,
+  );
+}
+
+export function startGame(
+  state: GameState,
+) {
+  startGameRound(state);
+}
+
+export function updateGame(
+  state: GameState,
+  dt: number,
+) {
+  return advanceGame(state, dt);
+}
+
+export function renderGame(
+  state: GameState,
+  _alpha: number,
+) {
+  drawGame(
+    state.render,
+    state.board,
+    state.timeScore,
+    state.layout.score,
+    state.assets,
+  );
+}
